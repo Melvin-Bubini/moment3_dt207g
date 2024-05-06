@@ -3,7 +3,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
@@ -85,6 +85,24 @@ app.delete("/jobs/:id", async (req, res) => {
         }
 
         return res.json({ message: "Job deleted with id: " + id });
+    } catch (error) {
+        return res.status(500).json({ error: "Something went wrong: " + error });
+    }
+});
+
+// Update job
+app.put("/jobs/:id", async (req, res) => {
+    const id = req.params.id;
+    const updates = req.body;
+
+    try {
+        const updatedJob = await job.findByIdAndUpdate(id, updates, { new: true });
+
+        if (!updatedJob) {
+            return res.status(404).json({ message: "Job not found" });
+        }
+
+        return res.json(updatedJob);
     } catch (error) {
         return res.status(500).json({ error: "Something went wrong: " + error });
     }
